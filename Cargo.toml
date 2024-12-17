@@ -1,0 +1,9 @@
+[package]
+name = "rtpl"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+num-traits="0.2"    # For Float trait
+rand = "0.8"        # For random sampling
+kiddo = "5.0"       # For kd-trees
