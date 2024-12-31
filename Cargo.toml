@@ -7,3 +7,6 @@ edition = "2021"
 num-traits="0.2"    # For Float trait
 rand = "0.8"        # For random sampling
 kiddo = "5.0"       # For kd-trees
+
+[dev-dependencies]
+macroquad = "0.3"   # Used only for animations in examples

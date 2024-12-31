@@ -9,11 +9,6 @@ pub trait Motion<T: State> {
     fn zero(state: T) -> Self;
 }
 
-pub trait MotionWithCost<T: State, F>: Motion<T> {
-    fn state(&self) -> &T;
-    fn cost(&self) -> F;
-}
-
 pub struct BasicMotion<T: State> {
     state: T,
 }
@@ -32,4 +27,12 @@ impl<T: State> Motion<T> for BasicMotion<T> {
     fn zero(state: T) -> Self {
         Self::new(state)
     }
+}
+
+pub trait HasCost<F> {
+    fn cost(&self) -> F;
+}
+
+pub trait Discretizable<T> {
+    fn discretize(&self, initial_state: &T, num_steps: usize) -> Vec<T>;
 }

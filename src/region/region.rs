@@ -23,19 +23,28 @@ impl<T: State + PartialEq> Region<T> for SingleStateRegion<T> {
     }
 }
 
+#[derive(Clone)]
 pub struct BallRegion<T, R, D> {
     center: T,
     radius: R,
     distance_metric: D,
 }
 
-impl<T, R, D: Default> BallRegion<T, R, D> {
+impl<T, R: Copy, D: Default> BallRegion<T, R, D> {
     pub fn new(center: T, radius: R) -> Self {
         Self {
             center,
             radius,
             distance_metric: D::default(),
         }
+    }
+
+    pub fn center(&self) -> &T {
+        &self.center
+    }
+
+    pub fn radius(&self) -> R {
+        self.radius
     }
 }
 
@@ -50,57 +59,53 @@ where
     }
 }
 
-pub struct UnionRegion<T, R1, R2> {
-    region1: R1,
-    region2: R2,
-    _phantom: std::marker::PhantomData<T>,
-}
-
-impl<T, R1, R2> UnionRegion<T, R1, R2> {
-    pub fn new(region1: R1, region2: R2) -> Self {
-        Self {
-            region1,
-            region2,
-            _phantom: std::marker::PhantomData,
-        }
-    }
-}
-
-impl<T, R1, R2> Region<T> for UnionRegion<T, R1, R2>
+pub struct UnionRegion<T>
 where
     T: State,
-    R1: Region<T>,
-    R2: Region<T>,
 {
-    fn contains(&self, state: &T) -> bool {
-        self.region1.contains(state) || self.region2.contains(state)
-    }
+    regions: Vec<Box<dyn Region<T>>>,
 }
 
-pub struct IntersectionRegion<T, R1, R2> {
-    region1: R1,
-    region2: R2,
-    _phantom: std::marker::PhantomData<T>,
-}
-
-impl<T, R1, R2> IntersectionRegion<T, R1, R2> {
-    pub fn new(region1: R1, region2: R2) -> Self {
-        Self {
-            region1,
-            region2,
-            _phantom: std::marker::PhantomData,
-        }
-    }
-}
-
-impl<T, R1, R2> Region<T> for IntersectionRegion<T, R1, R2>
+impl<T> UnionRegion<T>
 where
     T: State,
-    R1: Region<T>,
-    R2: Region<T>,
+{
+    pub fn new(regions: Vec<Box<dyn Region<T>>>) -> Self {
+        Self { regions }
+    }
+}
+
+impl<T> Region<T> for UnionRegion<T>
+where
+    T: State,
 {
     fn contains(&self, state: &T) -> bool {
-        self.region1.contains(state) && self.region2.contains(state)
+        self.regions.iter().any(|region| region.contains(state))
+    }
+}
+
+pub struct IntersectionRegion<T>
+where
+    T: State,
+{
+    regions: Vec<Box<dyn Region<T>>>,
+}
+
+impl<T> IntersectionRegion<T>
+where
+    T: State,
+{
+    pub fn new(regions: Vec<Box<dyn Region<T>>>) -> Self {
+        Self { regions }
+    }
+}
+
+impl<T> Region<T> for IntersectionRegion<T>
+where
+    T: State,
+{
+    fn contains(&self, state: &T) -> bool {
+        self.regions.iter().all(|region| region.contains(state))
     }
 }
 

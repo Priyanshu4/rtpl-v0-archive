@@ -18,10 +18,6 @@ pub struct Node<S: State, M: Motion<S>> {
 }
 
 impl<S: State, M: Motion<S>> Node<S, M> {
-    /// Constructs a new node.
-    /// Parameters:
-    /// - `motion`: The motion in the state space.
-    /// - `parent`: The index of the parent node (None if the node is the root).
     pub fn new(motion: M, parent: Option<usize>) -> Self {
         Self {
             motion,
@@ -44,51 +40,30 @@ impl<S: State, M: Motion<S>> Node<S, M> {
 }
 
 /// A Rapidly-exploring Random Tree (RRT) planner.
-/// Template Parameters:
-/// - `S`: The type of state.
-/// - `M`: The type of motion.
-/// - `GR`: The goal region.
-/// - `VC`: The validity checker.
-/// - `SD`: The sampling distribution.
-/// - `ST`: The steering function.
-/// - `NN`: The nearest neighbors data structure.
-/// - `F`: The floating point type.
-pub struct RRT<S, M, GR, VC, SD, ST, NN, F>
+pub struct RRT<S, M, F, NN>
 where
     S: State,
     M: Motion<S>,
-    GR: Region<S>,
-    VC: ValidityChecker<S, M>,
-    SD: SamplingDistribution<S>,
-    ST: Steering,
-    F: PartialOrd,
-    NN: NearestNeighbors<S, F>,
-{
-    /// The goal region.
-    goal_region: GR,
-    /// The nodes in the tree.
-    nodes: Vec<Node<S, M>>,
-    /// Index of the solution node (None if no solution has been found).
-    solution: Option<usize>,
-    validity_checker: VC,
-    sampling_distribution: SD,
-    steering: ST,
-    nearest_neighbors: NN,
-    _float: std::marker::PhantomData<F>,
-}
-
-impl<S, M, GR, VC, SD, ST, NN, F> RRT<S, M, GR, VC, SD, ST, NN, F>
-where
-    S: State + Clone,
-    M: Motion<S> + Clone,
-    GR: Region<S>,
-    VC: ValidityChecker<S, M>,
-    SD: SamplingDistribution<S>,
-    ST: Steering<State = S, Motion = M>,
     F: PartialOrd,
     NN: NearestNeighbors<S, F> + Default,
 {
-    /// Constructs a new RRT planner.
+    goal_region: Box<dyn Region<S>>,
+    validity_checker: Box<dyn ValidityChecker<S, M>>,
+    sampling_distribution: Box<dyn SamplingDistribution<S>>,
+    steering: Box<dyn Steering<S, M>>,
+    nearest_neighbors: NN,
+    nodes: Vec<Node<S, M>>,
+    solution: Option<usize>,
+    _phantom: std::marker::PhantomData<F>,
+}
+
+impl<S, M, F, NN> RRT<S, M, F, NN>
+where
+    S: State + Clone,
+    M: Motion<S> + Clone,
+    F: PartialOrd,
+    NN: NearestNeighbors<S, F> + Default,
+{
     ///
     /// Parameters:
     /// - `start`: The start state.
@@ -100,21 +75,22 @@ where
     /// Returns the RRT planner.
     pub fn new(
         start: S,
-        goal_region: GR,
-        validity_checker: VC,
-        sampling_distribution: SD,
-        steering: ST,
+        goal_region: Box<dyn Region<S>>,
+        validity_checker: Box<dyn ValidityChecker<S, M>>,
+        sampling_distribution: Box<dyn SamplingDistribution<S>>,
+        steering: Box<dyn Steering<S, M>>,
     ) -> Self {
         let mut rrt = Self {
             goal_region,
-            solution: None,
-            nodes: Vec::new(),
             validity_checker,
             sampling_distribution,
             steering,
             nearest_neighbors: NN::default(),
-            _float: std::marker::PhantomData,
+            nodes: Vec::new(),
+            solution: None,
+            _phantom: std::marker::PhantomData,
         };
+
         let root = Node::new(M::zero(start), None);
         rrt.add_node(root);
         rrt
@@ -182,14 +158,6 @@ where
         &self.nearest_neighbors
     }
 
-    pub fn get_sampling_distribution(&self) -> &SD {
-        &self.sampling_distribution
-    }
-
-    pub fn get_validity_checker(&self) -> &VC {
-        &self.validity_checker
-    }
-
     /// Returns the vector of nodes in the tree.
     pub fn get_tree(&self) -> &Vec<Node<S, M>> {
         &self.nodes
@@ -215,7 +183,10 @@ where
         let new_motion = self.steering.steer(nearest_node, &sample);
 
         // If the new motion is invalid, return.
-        if !self.validity_checker.is_motion_valid(&new_motion) {
+        if !self
+            .validity_checker
+            .is_motion_valid(nearest_node, &new_motion)
+        {
             return;
         }
 

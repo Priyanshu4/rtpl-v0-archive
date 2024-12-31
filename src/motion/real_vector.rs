@@ -1,15 +1,18 @@
+use crate::motion::Discretizable;
+use crate::motion::HasCost;
 use crate::motion::Motion;
-use crate::motion::MotionWithCost;
 use crate::state::RealVectorState;
 use num_traits::float::Float;
 
+#[derive(Clone, Copy, Debug)]
 pub struct RealEuclideanMotion<F: Float, const N: usize> {
     state: RealVectorState<F, N>,
+    cost: F,
 }
 
 impl<F: Float, const N: usize> RealEuclideanMotion<F, N> {
-    pub fn new(state: RealVectorState<F, N>) -> Self {
-        Self { state }
+    pub fn new(state: RealVectorState<F, N>, cost: F) -> Self {
+        Self { state, cost }
     }
 }
 
@@ -19,39 +22,27 @@ impl<F: Float, const N: usize> Motion<RealVectorState<F, N>> for RealEuclideanMo
     }
 
     fn zero(state: RealVectorState<F, N>) -> Self {
-        Self::new(state)
-    }
-}
-
-pub struct RealEuclideanMotionWithCost<F: Float, const N: usize> {
-    state: RealVectorState<F, N>,
-    cost: F,
-}
-
-impl<F: Float, const N: usize> RealEuclideanMotionWithCost<F, N> {
-    pub fn new(state: RealVectorState<F, N>, cost: F) -> Self {
-        Self { state, cost }
-    }
-}
-
-impl<F: Float, const N: usize> Motion<RealVectorState<F, N>> for RealEuclideanMotionWithCost<F, N> {
-    fn state(&self) -> &RealVectorState<F, N> {
-        &self.state
-    }
-
-    fn zero(state: RealVectorState<F, N>) -> Self {
         Self::new(state, F::zero())
     }
 }
 
-impl<F: Float, const N: usize> MotionWithCost<RealVectorState<F, N>, F>
-    for RealEuclideanMotionWithCost<F, N>
-{
-    fn state(&self) -> &RealVectorState<F, N> {
-        &self.state
-    }
-
+impl<F: Float, const N: usize> HasCost<F> for RealEuclideanMotion<F, N> {
     fn cost(&self) -> F {
         self.cost
+    }
+}
+
+impl<F: Float, const N: usize> Discretizable<RealVectorState<F, N>> for RealEuclideanMotion<F, N> {
+    fn discretize(
+        &self,
+        initial_state: &RealVectorState<F, N>,
+        num_steps: usize,
+    ) -> Vec<RealVectorState<F, N>> {
+        let direction = self.state - *initial_state;
+        let n = F::from(num_steps).expect("usize to F conversion failed");
+        let step = &direction / n;
+        (0..num_steps)
+            .map(|i| initial_state + &(&step * F::from(i).expect("usize to F conversion failed")))
+            .collect()
     }
 }
