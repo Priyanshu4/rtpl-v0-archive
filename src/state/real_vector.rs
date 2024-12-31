@@ -10,7 +10,12 @@ pub struct RealVectorState<F: Float, const N: usize> {
 }
 
 // Implement the State trait for RealVectorState.
-impl<F: Float, const N: usize> State for RealVectorState<F, N> {}
+impl<F: Float, const N: usize> State for RealVectorState<F, N> {
+    /// Returns the dimension of the RealVectorState.
+    fn dimension(&self) -> usize {
+        N
+    }
+}
 
 impl<F: Float, const N: usize> RealVectorState<F, N> {
     /// Constructs a new RealVectorState from an array of coordinates.

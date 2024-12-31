@@ -333,6 +333,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "lambert_w"
+version = "1.0.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2ee712885ade8423d61555fffa027c33a02e1e62e20c3356c379994073893e8f"
+dependencies = [
+ "libm",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -354,6 +363,12 @@ name = "libc"
 version = "0.2.168"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5aaeb2981e0606ca11d79718f8bb01164f1d6ed75080182d3abf017e6d244b6d"
+
+[[package]]
+name = "libm"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8355be11b20d696c8f18f6cc018c4e372165b1fa8126cef092399c9951984ffa"
 
 [[package]]
 name = "log"
@@ -596,6 +611,7 @@ dependencies = [
  "macroquad",
  "num-traits",
  "rand",
+ "special",
 ]
 
 [[package]]
@@ -639,6 +655,16 @@ name = "sorted-vec"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9f64b077cc81ab5f1209bb44c6530a3277261aeaa5405111d48326897306918b"
+
+[[package]]
+name = "special"
+version = "0.11.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "15e561befc4a32ae79f0c3c391ed2f1d30d86a4c5bc08668f080e8daa417a2f9"
+dependencies = [
+ "lambert_w",
+ "libm",
+]
 
 [[package]]
 name = "syn"

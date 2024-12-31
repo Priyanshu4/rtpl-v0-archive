@@ -180,7 +180,7 @@ where
         let nearest_node = self.nodes[nearest_node_index].motion().state();
 
         // Steer the nearest node towards the sample point to get a new point.
-        let new_motion = self.steering.steer(nearest_node, &sample);
+        let new_motion = self.steering.steer_towards(nearest_node, &sample);
 
         // If the new motion is invalid, return.
         if !self

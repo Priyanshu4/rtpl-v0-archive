@@ -11,5 +11,14 @@ pub trait Steering<S: State, M: Motion<S>> {
     ///
     /// Returns:
     /// The  motion that steers the robot towards the goal state.
-    fn steer(&self, from: &S, to: &S) -> M;
+    fn steer_towards(&self, from: &S, to: &S) -> M;
+
+    /// Steers the robot from one state exactly to another.
+    /// Parameters:
+    /// - `from`: The start state.
+    /// - `to`: The state to steer towards.
+    ///
+    /// Returns:
+    /// The motion that steers the robot exactly to the goal state.
+    fn steer_exact(&self, from: &S, to: &S) -> Option<M>;
 }
