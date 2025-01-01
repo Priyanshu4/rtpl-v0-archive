@@ -11,12 +11,7 @@ use num_traits::Float;
 
 /// A node in the RRT* tree.
 #[derive(Clone)]
-pub struct Node<S, M, F>
-where
-    S: State,
-    M: Motion<S> + HasCost<F>,
-    F: Float,
-{
+pub struct Node<S, M, F> {
     /// The motion in the state space.
     motion: M,
     /// The index of the parent node (None if the node is the root).
@@ -56,13 +51,7 @@ impl<F: Float, S: State, M: Motion<S> + HasCost<F>> Node<S, M, F> {
 }
 
 /// A Rapidly-exploring Random Tree Star (RRT*) planner.
-pub struct RRTstar<S, M, F, NN>
-where
-    S: State,
-    M: Motion<S> + HasCost<F>,
-    F: Float,
-    NN: NearestNeighbors<S, F> + Default,
-{
+pub struct RRTstar<S, M, F, NN> {
     goal_region: Box<dyn Region<S>>,
     validity_checker: Box<dyn ValidityChecker<S, M>>,
     sampling_distribution: Box<dyn SamplingDistribution<S>>,
@@ -209,10 +198,9 @@ where
         let new_node = Node::new(new_motion, Some(nearest_node_index), cumulative_cost);
 
         // Find the neighbors of the new node.
-        let neighbors = self.nearest_neighbors.within_radius(
-            &new_node.state(),
-            self.rewiring_radius() * self.rewiring_radius(),
-        );
+        let neighbors = self
+            .nearest_neighbors
+            .within_radius(&new_node.state(), self.rewiring_radius());
 
         // Rewire the new node to the best parent and add to the tree.
         let new_node = self.rewire_to_best_parent(new_node, &neighbors);
@@ -320,7 +308,7 @@ where
     }
 }
 
-/// Computes gamma value to acheive asymptotic optimality for the RRT* algorithm.
+/// Computes gamma value to achieve asymptotic optimality for the RRT* algorithm.
 /// Parameters:
 /// - `free_space_volume`: The volume of the free space.
 /// - `dimension`: The dimension of the state space.

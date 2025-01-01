@@ -1,13 +1,15 @@
-//! # Rapidly-exploring Random Tree Star (RRT*) Example in 2 Dimensions
+//! # Rapidly-exploring Random Tree (RRT) Example in 2 Dimensions
 //!
 //! ## Usage
 //! Run the program with:
 //! ```bash
-//! cargo run --example rrt_star
+//! cargo run --example rrt2d
 //! ```
 
 use macroquad::prelude::*;
-use rtpl::motion::Motion;
+use rtpl::base::{collision::CollisionRegion, region::UnionRegion, Motion, Region};
+use rtpl::real_vector::euclidean::{planners::RRTstar, region::Sphere, EuclideanSteering};
+use rtpl::real_vector::{sampling::GoalBiasedUniformDistribution, RealVectorState};
 
 const SCREEN_HEIGHT: i32 = 600;
 const SCREEN_WIDTH: i32 = 600;
@@ -23,66 +25,50 @@ fn window_conf() -> Conf {
     }
 }
 
-type Circle = rtpl::region::BallRegion<
-    rtpl::state::RealVectorState<f32, 2>,
-    f32,
-    rtpl::distance::real_vector::Euclidean,
->;
+type Circle = Sphere<f32, 2>;
 
 #[macroquad::main(window_conf)]
 async fn main() {
     // Define the obstacles
     let circles: Vec<Circle> = vec![
-        Circle::new(rtpl::state::RealVectorState::new([400.0, 400.0]), 50.0),
-        Circle::new(rtpl::state::RealVectorState::new([400.0, 320.0]), 50.0),
-        Circle::new(rtpl::state::RealVectorState::new([200.0, 200.0]), 100.0),
-        Circle::new(rtpl::state::RealVectorState::new([300.0, 200.0]), 100.0),
-        Circle::new(rtpl::state::RealVectorState::new([200.0, 420.0]), 100.0),
-        Circle::new(rtpl::state::RealVectorState::new([400.0, 200.0]), 100.0),
+        Circle::new(RealVectorState::new([400.0, 400.0]), 50.0),
+        Circle::new(RealVectorState::new([400.0, 320.0]), 50.0),
+        Circle::new(RealVectorState::new([200.0, 200.0]), 100.0),
+        Circle::new(RealVectorState::new([300.0, 200.0]), 100.0),
+        Circle::new(RealVectorState::new([200.0, 420.0]), 100.0),
+        Circle::new(RealVectorState::new([400.0, 200.0]), 100.0),
     ];
 
-    let boxed_circles: Vec<Box<dyn rtpl::region::Region<rtpl::state::RealVectorState<f32, 2>>>> =
-        circles
-            .iter()
-            .map(|circle| Box::new(circle.clone()) as Box<dyn rtpl::region::Region<_>>)
-            .collect();
+    let boxed_circles: Vec<Box<dyn Region<RealVectorState<f32, 2>>>> = circles
+        .iter()
+        .map(|circle| Box::new(circle.clone()) as Box<dyn Region<_>>)
+        .collect();
 
-    let validity_checker = rtpl::collision::CollisionRegion::new(
-        Box::new(rtpl::region::UnionRegion::new(boxed_circles)),
-        2,
-    );
+    let validity_checker = CollisionRegion::new(Box::new(UnionRegion::new(boxed_circles)), 2);
 
     // Define the start and goal points.
-    let start = rtpl::state::RealVectorState::new([100.0, 100.0]);
-    let goal_state = rtpl::state::RealVectorState::new([500.0, 500.0]);
+    let start = RealVectorState::new([100.0, 100.0]);
+    let goal_state = RealVectorState::new([500.0, 500.0]);
     let goal_tolerance = 10.0;
     let goal_region = Circle::new(goal_state, goal_tolerance);
 
+    // Define the steering function.
+    let steering = EuclideanSteering::new(10.0);
+
     // Use a uniform sampling distribution with 5% goal bias.
     let ranges = [(0.0, SCREEN_WIDTH as f32), (0.0, SCREEN_HEIGHT as f32)];
-    let sampling_distribution = rtpl::sampling::real_vector::UniformDistribution::new(ranges);
-
-    // Define the steering function.
-    let range = 20.0;
-    let steering = rtpl::steering::real_euclidean::EuclideanSteering::new(range);
+    let goal_bias = 0.05;
+    let sampling_distribution = GoalBiasedUniformDistribution::new(ranges, goal_state, goal_bias)
+        .expect("Failed to create sampling distribution.");
 
     // Create the RRT planner.
-    let mut rrt: rtpl::planners::rrt_star::RRTstar<
-        rtpl::state::RealVectorState<f32, 2>,
-        rtpl::motion::RealEuclideanMotion<f32, 2>,
-        f32,
-        rtpl::nearest_neighbors::KdTreeNearestNeighbors<
-            f32,
-            2,
-            rtpl::distance::real_vector::SquaredEuclidean,
-        >,
-    > = rtpl::planners::rrt_star::RRTstar::new(
+    let mut rrt_star: RRTstar<f32, 2> = RRTstar::new(
         start.clone(),
         Box::new(goal_region),
         Box::new(validity_checker),
         Box::new(sampling_distribution),
         Box::new(steering),
-        40.0,
+        20.0,
         rtpl::planners::rrt_star::optimal_gamma(500.0 * 500.0, 2),
     );
 
@@ -104,11 +90,10 @@ async fn main() {
         draw_circle(start[0], start[1], 5.0, BLUE);
         draw_circle(goal_state[0], goal_state[1], goal_tolerance, GREEN);
 
-        // Run the RRT* planner for one iteration.
-        rrt.run_iterations(1);
+        rrt_star.run_iterations(1);
 
         // Draw each node and the edge to its parent.
-        let nodes = rrt.get_tree();
+        let nodes = rrt_star.get_tree();
         for node in nodes {
             let state = node.state();
             if let Some(parent_index) = node.parent() {
@@ -127,7 +112,7 @@ async fn main() {
         }
 
         // Draw the path if a solution was found.
-        if let Some(path) = rrt.get_path() {
+        if let Some(path) = rrt_star.get_path() {
             // Raw path
             for i in 0..path.len() - 1 {
                 let a = path[i].state();
