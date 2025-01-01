@@ -1,10 +1,10 @@
-use crate::collision::ValidityChecker;
-use crate::motion::Motion;
-use crate::nearest_neighbors::NearestNeighbors;
-use crate::region::Region;
-use crate::sampling::SamplingDistribution;
-use crate::state::State;
-use crate::steering::Steering;
+use crate::base::Motion;
+use crate::base::NearestNeighbors;
+use crate::base::Region;
+use crate::base::SamplingDistribution;
+use crate::base::State;
+use crate::base::Steering;
+use crate::base::ValidityChecker;
 
 /// A node in the RRT tree.
 #[derive(Clone)]

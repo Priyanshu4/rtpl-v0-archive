@@ -1,5 +1,5 @@
-use crate::motion::Motion;
-use crate::state::State;
+use crate::base::motion::Motion;
+use crate::base::state::State;
 
 /// A trait for steering the robot from one point to another.
 /// Allows considering the robot's kinematics and dynamics in the RRT.

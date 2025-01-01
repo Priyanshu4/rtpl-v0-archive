@@ -1,5 +1,5 @@
-use crate::distance::DistanceMetric;
-use crate::state::State;
+use crate::base::distance::DistanceMetric;
+use crate::base::state::State;
 
 /// A region is a set of states in the state space of a system.
 pub trait Region<T: State> {

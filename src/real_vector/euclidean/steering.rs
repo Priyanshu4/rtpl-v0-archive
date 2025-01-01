@@ -1,6 +1,6 @@
-use crate::motion::RealEuclideanMotion;
-use crate::state::RealVectorState;
-use crate::steering::Steering;
+use crate::base::steering::Steering;
+use crate::real_vector::euclidean::EuclideanMotion;
+use crate::real_vector::RealVectorState;
 use num_traits::Float;
 
 /// A steering strategy that moves the robot in a straight line towards the goal.
@@ -8,14 +8,14 @@ pub struct EuclideanSteering<F, const N: usize> {
     range: F, // The maximum distance for steer towards.
 }
 
-impl<F: Float, const N: usize> Steering<RealVectorState<F, N>, RealEuclideanMotion<F, N>>
+impl<F: Float, const N: usize> Steering<RealVectorState<F, N>, EuclideanMotion<F, N>>
     for EuclideanSteering<F, N>
 {
     fn steer_towards(
         &self,
         from: &RealVectorState<F, N>,
         to: &RealVectorState<F, N>,
-    ) -> RealEuclideanMotion<F, N> {
+    ) -> EuclideanMotion<F, N> {
         let direction = to - from;
         let distance = direction.norm();
         let ratio = if distance <= self.range {
@@ -24,17 +24,17 @@ impl<F: Float, const N: usize> Steering<RealVectorState<F, N>, RealEuclideanMoti
             self.range / distance
         };
         let state = from + &(&direction * ratio);
-        RealEuclideanMotion::new(state, distance)
+        EuclideanMotion::new(state, distance)
     }
 
     fn steer_exact(
         &self,
         from: &RealVectorState<F, N>,
         to: &RealVectorState<F, N>,
-    ) -> Option<RealEuclideanMotion<F, N>> {
+    ) -> Option<EuclideanMotion<F, N>> {
         let direction = to - from;
         let distance = direction.norm();
-        Some(RealEuclideanMotion::new(to.clone(), distance))
+        Some(EuclideanMotion::new(to.clone(), distance))
     }
 }
 

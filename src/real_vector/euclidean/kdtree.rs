@@ -1,31 +1,30 @@
-use crate::distance::KdTreeDistanceMetric;
-use crate::nearest_neighbors::NearestNeighbors;
-use crate::state::RealVectorState;
+use crate::base::NearestNeighbors;
+use crate::real_vector::RealVectorState;
+use kiddo::float::distance::SquaredEuclidean;
 use kiddo::float::kdtree::Axis;
 use kiddo::float::kdtree::KdTree;
 use num_traits::Float;
 
 #[derive(Default)]
-pub struct KdTreeNearestNeighbors<F: Float + Axis, const N: usize, D: KdTreeDistanceMetric<F, N>> {
+pub struct EuclideanKdTree<F: Float + Axis, const N: usize> {
     kdtree: KdTree<F, usize, N, 32, u32>,
-    phantom: std::marker::PhantomData<D>,
 }
 
-impl<F: Float + Axis, const N: usize, D: KdTreeDistanceMetric<F, N>>
-    NearestNeighbors<RealVectorState<F, N>, F> for KdTreeNearestNeighbors<F, N, D>
+impl<F: Float + Axis, const N: usize> NearestNeighbors<RealVectorState<F, N>, F>
+    for EuclideanKdTree<F, N>
 {
     fn add(&mut self, state: RealVectorState<F, N>, item: usize) {
         self.kdtree.add(state.values(), item);
     }
 
     fn nearest_one(&self, state: &RealVectorState<F, N>) -> Option<usize> {
-        let neighbor = self.kdtree.nearest_one::<D>(state.values());
+        let neighbor = self.kdtree.nearest_one::<SquaredEuclidean>(state.values());
         Some(neighbor.item)
     }
 
     fn nearest_k(&self, state: &RealVectorState<F, N>, k: usize) -> Vec<usize> {
         self.kdtree
-            .nearest_n::<D>(state.values(), k)
+            .nearest_n::<SquaredEuclidean>(state.values(), k)
             .iter()
             .map(|n| n.item)
             .collect()
@@ -33,7 +32,7 @@ impl<F: Float + Axis, const N: usize, D: KdTreeDistanceMetric<F, N>>
 
     fn within_radius(&self, state: &RealVectorState<F, N>, radius: F) -> Vec<usize> {
         self.kdtree
-            .within::<D>(state.values(), radius)
+            .within::<SquaredEuclidean>(state.values(), radius * radius)
             .iter()
             .map(|n| n.item)
             .collect()

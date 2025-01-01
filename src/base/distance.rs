@@ -1,4 +1,4 @@
-use crate::state::State;
+use crate::base::state::State;
 
 /// A trait for distance metrics.
 pub trait DistanceMetric<T: State, R> {

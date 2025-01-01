@@ -1,4 +1,4 @@
-use crate::state::State;
+use crate::base::state::State;
 
 /// A trait for sampling distributions.
 pub trait SamplingDistribution<T: State> {

@@ -1,5 +1,5 @@
-use crate::sampling::SamplingDistribution;
-use crate::state::RealVectorState;
+use crate::base::sampling::SamplingDistribution;
+use crate::real_vector::RealVectorState;
 use num_traits::Float;
 use rand::distributions::{uniform::SampleUniform, Bernoulli, Distribution, Uniform};
 

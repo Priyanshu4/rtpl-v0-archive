@@ -1,4 +1,4 @@
-use crate::state::State;
+use crate::base::state::State;
 
 /// A trait for motions in the state space of a system.
 pub trait Motion<T: State> {

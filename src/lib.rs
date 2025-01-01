@@ -1,9 +1,3 @@
-pub mod collision;
-pub mod distance;
-pub mod motion;
-pub mod nearest_neighbors;
+pub mod base;
 pub mod planners;
-pub mod region;
-pub mod sampling;
-pub mod state;
-pub mod steering;
+pub mod real_vector;

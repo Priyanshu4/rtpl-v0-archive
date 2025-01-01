@@ -1,6 +1,6 @@
-use crate::motion::{Discretizable, Motion};
-use crate::region::Region;
-use crate::state::State;
+use crate::base::motion::{Discretizable, Motion};
+use crate::base::region::Region;
+use crate::base::state::State;
 
 /// Checks if a state or motion is valid (i.e., not in collision).
 pub trait ValidityChecker<S: State, M: Motion<S>> {

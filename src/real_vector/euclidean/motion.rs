@@ -1,22 +1,22 @@
-use crate::motion::Discretizable;
-use crate::motion::HasCost;
-use crate::motion::Motion;
-use crate::state::RealVectorState;
+use crate::base::motion::Discretizable;
+use crate::base::motion::HasCost;
+use crate::base::motion::Motion;
+use crate::real_vector::RealVectorState;
 use num_traits::float::Float;
 
 #[derive(Clone, Copy, Debug)]
-pub struct RealEuclideanMotion<F: Float, const N: usize> {
+pub struct EuclideanMotion<F: Float, const N: usize> {
     state: RealVectorState<F, N>,
     cost: F,
 }
 
-impl<F: Float, const N: usize> RealEuclideanMotion<F, N> {
+impl<F: Float, const N: usize> EuclideanMotion<F, N> {
     pub fn new(state: RealVectorState<F, N>, cost: F) -> Self {
         Self { state, cost }
     }
 }
 
-impl<F: Float, const N: usize> Motion<RealVectorState<F, N>> for RealEuclideanMotion<F, N> {
+impl<F: Float, const N: usize> Motion<RealVectorState<F, N>> for EuclideanMotion<F, N> {
     fn state(&self) -> &RealVectorState<F, N> {
         &self.state
     }
@@ -26,13 +26,13 @@ impl<F: Float, const N: usize> Motion<RealVectorState<F, N>> for RealEuclideanMo
     }
 }
 
-impl<F: Float, const N: usize> HasCost<F> for RealEuclideanMotion<F, N> {
+impl<F: Float, const N: usize> HasCost<F> for EuclideanMotion<F, N> {
     fn cost(&self) -> F {
         self.cost
     }
 }
 
-impl<F: Float, const N: usize> Discretizable<RealVectorState<F, N>> for RealEuclideanMotion<F, N> {
+impl<F: Float, const N: usize> Discretizable<RealVectorState<F, N>> for EuclideanMotion<F, N> {
     fn discretize(
         &self,
         initial_state: &RealVectorState<F, N>,
