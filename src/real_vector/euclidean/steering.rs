@@ -4,6 +4,7 @@ use crate::real_vector::RealVectorState;
 use num_traits::Float;
 
 /// A steering strategy that moves the robot in a straight line towards the goal.
+#[derive(Clone, Copy, Debug)]
 pub struct EuclideanSteering<F, const N: usize> {
     range: F, // The maximum distance for steer towards.
 }
