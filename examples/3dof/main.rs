@@ -1,3 +1,5 @@
+use std::path::Path;
+
 mod robot;
 mod robot_sphere_collision;
 
@@ -10,9 +12,13 @@ use rtpl::real_vector::{sampling::GoalBiasedUniformDistribution, RealVectorState
 
 fn main() {
     // Create a robot instance
-    let urdf_path = "examples/3dof/cylinder_three.urdf";
+    let urdf_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .canonicalize()
+        .expect("Failed to get canonical path")
+        .join("examples/3dof/cylinder_three.urdf");
+
     let joint_limits = [(-1.57, 1.57), (-1.57, 1.57), (-1.57, 1.57)];
-    let robot = Robot::new(urdf_path, 3, joint_limits.to_vec());
+    let robot = Robot::new(&urdf_path, 3, joint_limits.to_vec());
     let robot = robot.expect("Failed to create robot.");
 
     // Create spherical obstacles
@@ -68,7 +74,9 @@ fn main() {
     // Create a json object
     let mut data = json::object! {
         spheres: json::JsonValue::new_array(),
-        urdf_path: urdf_path,
+        urdf_path: urdf_path.to_str().unwrap(),
+        start: json::JsonValue::new_array(),
+        goal: json::JsonValue::new_array(),
         path: json::JsonValue::new_array(),
     };
     for sphere in spheres {
@@ -83,6 +91,10 @@ fn main() {
         }
         data["spheres"].push(json_sphere).expect("JSON error");
     }
+    for i in 0..3 {
+        data["start"].push(start[i]).expect("JSON error");
+        data["goal"].push(goal_state[i]).expect("JSON error");
+    }
     for motion in path {
         let mut json_state = json::JsonValue::new_array();
         let state = motion.state();
@@ -94,6 +106,9 @@ fn main() {
 
     // Write the json object to a file
     let json_string = data.dump();
-    let path = "examples/3dof/path.json";
-    std::fs::write(path, json_string).expect("Failed to write path to file.");
+    let file_out = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .canonicalize()
+        .expect("Failed to get canonical path")
+        .join("examples/3dof/path.json");
+    std::fs::write(file_out, json_string).expect("Failed to write path to file.");
 }

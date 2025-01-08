@@ -17,8 +17,8 @@ pub struct Robot {
 
 impl Robot {
     /// Creates a new Robot instance, parsing the chain and extracting cylinders.
-    pub fn new(
-        urdf_path: &str,
+    pub fn new<P: AsRef<std::path::Path>>(
+        urdf_path: P,
         expected_cylinders: usize,
         joint_limits: Vec<(f32, f32)>,
     ) -> Result<Self, String> {
