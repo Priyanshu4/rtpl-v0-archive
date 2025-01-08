@@ -69,6 +69,7 @@ impl<const N: usize> ValidityChecker<RealVectorState<f32, N>, EuclideanMotion<f3
 
 /// Checks if a cylinder and a sphere intersect.
 /// The cylinder is represented by its length, radius, and pose (`na::Isometry3<f32>`).
+/// The cylinder pose is for its base.
 /// The sphere is represented by its radius and center (`na::Point3<f32>`).
 fn cylinder_sphere_intersect(
     cylinder_length: f32,
@@ -77,8 +78,15 @@ fn cylinder_sphere_intersect(
     sphere_radius: f32,
     sphere_center: na::Point3<f32>,
 ) -> bool {
+    // Compute the cylinder center by translating the base pose along the local z-axis
+    let cylinder_center_pose = cylinder_pose
+        * na::Isometry3::new(
+            na::Vector3::new(0.0, 0.0, cylinder_length / 2.0), // Translation along z-axis
+            na::Vector3::zeros(),                              // No rotation adjustment
+        );
+
     // Transform the sphere center to the cylinder's local space
-    let local_sphere_center = cylinder_pose.inverse_transform_point(&sphere_center);
+    let local_sphere_center = cylinder_center_pose.inverse_transform_point(&sphere_center);
 
     // Check if the sphere center's projection onto the z-axis is within the cylinder's length
     let half_length = cylinder_length / 2.0;
