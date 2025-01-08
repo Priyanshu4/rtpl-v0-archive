@@ -57,7 +57,7 @@ async fn main() {
 
     // Use a uniform sampling distribution with 5% goal bias.
     let ranges = [(0.0, SCREEN_WIDTH as f32), (0.0, SCREEN_HEIGHT as f32)];
-    let goal_bias = 0.05;
+    let goal_bias = 0.0;
     let sampling_distribution = GoalBiasedUniformDistribution::new(ranges, goal_state, goal_bias)
         .expect("Failed to create sampling distribution.");
 
