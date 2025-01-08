@@ -13,3 +13,4 @@ special = "0.11"     # For Gamma function
 macroquad = "0.3"   # Used only for animations in examples
 k = "0.32"
 urdf-rs = "0.9.0"
+json = "0.12.4"

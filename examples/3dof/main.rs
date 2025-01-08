@@ -4,28 +4,26 @@ mod robot_sphere_collision;
 use robot::Robot;
 use robot_sphere_collision::RobotSphereCollisionChecker;
 
+use rtpl::base::Motion;
 use rtpl::real_vector::euclidean::{planners::RRTstar, region::Sphere, EuclideanSteering};
 use rtpl::real_vector::{sampling::GoalBiasedUniformDistribution, RealVectorState};
 
 fn main() {
     // Create a robot instance
+    let urdf_path = "examples/3dof/cylinder_three.urdf";
     let joint_limits = [(-1.57, 1.57), (-1.57, 1.57), (-1.57, 1.57)];
-    let robot = Robot::new(
-        "examples/3dof/cylinder_three.urdf",
-        3,
-        joint_limits.clone().to_vec(),
-    );
+    let robot = Robot::new(urdf_path, 3, joint_limits.to_vec());
     let robot = robot.expect("Failed to create robot.");
 
     // Create spherical obstacles
     let spheres = vec![
-        Sphere::new(RealVectorState::new([10.0, 0.0, 0.0]), 0.5),
+        Sphere::new(RealVectorState::new([10.0, 1.0, 1.0]), 0.4),
         Sphere::new(RealVectorState::new([10.0, 0.0, 1.0]), 0.5),
         Sphere::new(RealVectorState::new([10.0, 0.0, 2.0]), 0.5),
     ];
 
     // Create a collision checker
-    let validity_checker = RobotSphereCollisionChecker::new(robot, spheres, 10);
+    let validity_checker = RobotSphereCollisionChecker::new(robot, spheres.clone(), 10);
 
     // Define the start and goal points.
     let start = RealVectorState::new([0.0, 0.0, 0.0]);
@@ -62,8 +60,40 @@ fn main() {
         return;
     }
     let path = path.unwrap();
-
-    for state in path {
-        println!("{:?}", state);
+    for motion in path.clone() {
+        println!("{:?}", motion);
     }
+
+    // Write the spheres, urdf path and planned path to a json file
+    // Create a json object
+    let mut data = json::object! {
+        spheres: json::JsonValue::new_array(),
+        urdf_path: urdf_path,
+        path: json::JsonValue::new_array(),
+    };
+    for sphere in spheres {
+        let mut json_sphere = json::object! {
+            center: json::JsonValue::new_array(),
+            radius: sphere.radius(),
+        };
+        for i in 0..3 {
+            json_sphere["center"]
+                .push(sphere.center()[i])
+                .expect("JSON error");
+        }
+        data["spheres"].push(json_sphere).expect("JSON error");
+    }
+    for motion in path {
+        let mut json_state = json::JsonValue::new_array();
+        let state = motion.state();
+        for i in 0..3 {
+            json_state.push(state[i]).expect("JSON error");
+        }
+        data["path"].push(json_state).expect("JSON error");
+    }
+
+    // Write the json object to a file
+    let json_string = data.dump();
+    let path = "examples/3dof/path.json";
+    std::fs::write(path, json_string).expect("Failed to write path to file.");
 }
