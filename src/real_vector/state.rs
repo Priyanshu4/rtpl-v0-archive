@@ -52,6 +52,11 @@ impl<F: Float, const N: usize> RealVectorState<F, N> {
         &self.values
     }
 
+    /// Returns the coordinates of the RealVectorState as a vector.
+    pub fn to_vec(&self) -> Vec<F> {
+        self.values.to_vec()
+    }
+
     /// Computes the dot product of the RealVectorState with another RealVectorState.
     ///
     /// Parameters:

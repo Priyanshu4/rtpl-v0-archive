@@ -11,3 +11,5 @@ special = "0.11"     # For Gamma function
 
 [dev-dependencies]
 macroquad = "0.3"   # Used only for animations in examples
+k = "0.32"
+urdf-rs = "0.9.0"
