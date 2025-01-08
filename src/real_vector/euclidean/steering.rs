@@ -18,13 +18,11 @@ impl<F: Float, const N: usize> Steering<RealVectorState<F, N>, EuclideanMotion<F
     ) -> EuclideanMotion<F, N> {
         let direction = to - from;
         let distance = direction.norm();
-        let ratio = if distance <= self.range {
-            F::one()
+        if distance <= self.range {
+            EuclideanMotion::new(to.clone(), distance)
         } else {
-            self.range / distance
-        };
-        let state = from + &(&direction * ratio);
-        EuclideanMotion::new(state, distance)
+            EuclideanMotion::new(from + &(&direction / distance * self.range), self.range)
+        }
     }
 
     fn steer_exact(

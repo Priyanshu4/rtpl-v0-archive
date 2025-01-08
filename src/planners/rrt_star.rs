@@ -45,7 +45,7 @@ impl<F: Float, S: State, M: Motion<S> + HasCost<F>> Node<S, M, F> {
         self.parent
     }
 
-    pub fn cost(&self) -> F {
+    pub fn cumulative_cost(&self) -> F {
         self.cumulative_cost
     }
 }
@@ -272,7 +272,6 @@ where
             if new_motion.is_none() {
                 continue;
             }
-
             let new_motion = new_motion.unwrap();
 
             if self
