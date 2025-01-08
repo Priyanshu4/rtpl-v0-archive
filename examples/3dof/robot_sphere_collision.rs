@@ -4,6 +4,7 @@ use rtpl::base::motion::Discretizable;
 use rtpl::base::Motion;
 use rtpl::base::ValidityChecker;
 use rtpl::real_vector::euclidean::region::Sphere;
+use rtpl::real_vector::euclidean::EuclideanMotion;
 use rtpl::real_vector::RealVectorState;
 use std::cell::RefCell;
 
@@ -23,9 +24,8 @@ impl RobotSphereCollisionChecker {
     }
 }
 
-impl<M, const N: usize> ValidityChecker<RealVectorState<f32, N>, M> for RobotSphereCollisionChecker
-where
-    M: Motion<RealVectorState<f32, N>> + Discretizable<RealVectorState<f32, N>>,
+impl<const N: usize> ValidityChecker<RealVectorState<f32, N>, EuclideanMotion<f32, N>>
+    for RobotSphereCollisionChecker
 {
     fn is_state_valid(&self, state: &RealVectorState<f32, N>) -> bool {
         let mut robot = self.robot.borrow_mut();
@@ -57,11 +57,13 @@ where
         true
     }
 
-    fn is_motion_valid(&self, initial_state: &RealVectorState<f32, N>, motion: &M) -> bool {
+    fn is_motion_valid(
+        &self,
+        initial_state: &RealVectorState<f32, N>,
+        motion: &EuclideanMotion<f32, N>,
+    ) -> bool {
         let states = motion.discretize(initial_state, self.discretization_steps);
-        states.iter().all(|state| {
-                <RobotSphereCollisionChecker as ValidityChecker<RealVectorState<f32, N>, M>>::is_state_valid(self, state)
-            })
+        states.iter().all(|state| self.is_state_valid(state))
     }
 }
 
