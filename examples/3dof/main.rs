@@ -7,7 +7,6 @@ use robot::Robot;
 use robot_sphere_collision::RobotSphereCollisionChecker;
 
 use rtpl::base::{Motion, ValidityChecker};
-use rtpl::real_vector::euclidean::EuclideanMotion;
 use rtpl::real_vector::euclidean::{planners::RRTstar, region::Sphere, EuclideanSteering};
 use rtpl::real_vector::{sampling::GoalBiasedUniformDistribution, RealVectorState};
 
@@ -24,9 +23,9 @@ fn main() {
 
     // Create spherical obstacles
     let spheres = vec![
-        Sphere::new(RealVectorState::new([2.0, 1.0, 1.0]), 0.4),
-        Sphere::new(RealVectorState::new([1.0, -1.0, 1.0]), 0.5),
-        Sphere::new(RealVectorState::new([1.2, 0.2, 2.0]), 0.5),
+        Sphere::new(RealVectorState::new([0.5, 0.9, 2.0]), 0.3),
+        Sphere::new(RealVectorState::new([0.8, 1.1, 2.0]), 0.4),
+        Sphere::new(RealVectorState::new([0.8, 0.4, 1.1]), 0.5),
     ];
 
     // Create a collision checker
@@ -39,9 +38,14 @@ fn main() {
         return;
     }
 
+    // Define the goal region. Check that the goal state is valid.
     let goal_state = RealVectorState::new([1.57, 1.57, 1.57]);
     let goal_tolerance = 0.05;
     let goal_region = Sphere::new(goal_state, goal_tolerance);
+    if !validity_checker.is_state_valid(goal_region.center()) {
+        println!("Goal state is invalid.");
+        return;
+    }
 
     // Define the steering function.
     let steering = EuclideanSteering::new(0.05);
@@ -63,7 +67,7 @@ fn main() {
         rtpl::planners::rrt_star::optimal_gamma(3.14 * 3.14 * 3.14, 3),
     );
 
-    rrt_star.run_iterations(1000);
+    rrt_star.run_iterations(20000);
 
     // Print the path
     let path = rrt_star.get_path();

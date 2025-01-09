@@ -1,7 +1,7 @@
 use k::{nalgebra as na, Chain, InverseKinematicsSolver, SerialChain};
 use urdf_rs::{read_file, Geometry};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Cylinder {
     pub radius: f32,
     pub length: f32,
