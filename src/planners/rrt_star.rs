@@ -179,10 +179,6 @@ where
         Some(path)
     }
 
-    pub fn get_nearest_neighbors(&self) -> &NN {
-        &self.nearest_neighbors
-    }
-
     /// Returns the vector of nodes in the tree.
     pub fn get_tree(&self) -> &Vec<Node<S, M, F>> {
         &self.nodes
