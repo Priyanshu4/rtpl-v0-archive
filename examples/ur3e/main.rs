@@ -65,7 +65,7 @@ fn main() {
         Box::new(sampling_distribution),
         Box::new(steering),
         0.1,
-        rtpl::planners::rrt_star::optimal_gamma(3.14 * 3.14 * 3.14, 3),
+        rtpl::planners::rrt_star::optimal_gamma(3.14_f32.powi(6), 6),
     );
 
     rrt_star.plan_until(&mut MaxTimeTermination::new(
