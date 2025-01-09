@@ -130,18 +130,12 @@ where
 
     /// Run a fixed number of iterations of the RRT algorithm. Does not terminate early if a solution is found.
     ///
-    /// Returns true if the RRT found a solution.
-    ///
     /// Parameters:
     /// - `iterations`: The number of iterations to run.
-    pub fn run_iterations(&mut self, iterations: u32) -> bool {
+    pub fn run_iterations(&mut self, iterations: u32) {
         for _ in 0..iterations {
             self.iteration();
-            if self.solved() {
-                return true;
-            }
         }
-        return false;
     }
 
     /// Returns true if a solution was found.
