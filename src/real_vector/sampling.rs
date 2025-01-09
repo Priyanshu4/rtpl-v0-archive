@@ -6,6 +6,7 @@ use rand::distributions::{uniform::SampleUniform, Bernoulli, Distribution, Unifo
 /// A uniform distribution for float vectors
 /// Each dimension has a range of values.
 pub struct UniformDistribution<F: Float + SampleUniform, const N: usize> {
+    ranges: [(F, F); N],
     uniforms: [Uniform<F>; N],
     rng: rand::rngs::ThreadRng,
 }
@@ -20,9 +21,14 @@ impl<F: Float + SampleUniform, const N: usize> UniformDistribution<F, N> {
         let uniforms: [Uniform<F>; N] =
             std::array::from_fn(|i| Uniform::new_inclusive(ranges[i].0, ranges[i].1));
         Self {
+            ranges,
             uniforms,
             rng: rand::thread_rng(),
         }
+    }
+
+    pub fn ranges(&self) -> [(F, F); N] {
+        self.ranges
     }
 }
 
@@ -35,7 +41,14 @@ impl<F: Float + SampleUniform, const N: usize> SamplingDistribution<RealVectorSt
     }
 }
 
+impl<F: Float + SampleUniform + Clone, const N: usize> Clone for UniformDistribution<F, N> {
+    fn clone(&self) -> Self {
+        UniformDistribution::new(self.ranges)
+    }
+}
+
 /// A uniform distribution that occasionally samples the goal with a given goal_bias probability.
+#[derive(Clone)]
 pub struct GoalBiasedUniformDistribution<F: Float + SampleUniform, const N: usize> {
     uniform: UniformDistribution<F, N>, // Uniform distribution for sampling RealVectorStates.
     bernoulli: Bernoulli,               // Bernoulli distribution for goal bias.
