@@ -6,6 +6,7 @@ mod robot_sphere_collision;
 use robot::Robot;
 use robot_sphere_collision::RobotSphereCollisionChecker;
 
+use rtpl::base::termination::MaxTimeTermination;
 use rtpl::base::{Motion, ValidityChecker};
 use rtpl::real_vector::euclidean::{planners::RRTstar, region::Sphere, EuclideanSteering};
 use rtpl::real_vector::{sampling::GoalBiasedUniformDistribution, RealVectorState};
@@ -51,7 +52,7 @@ fn main() {
     let steering = EuclideanSteering::new(0.05);
 
     // Use a uniform sampling distribution with 5% goal bias.
-    let goal_bias = 0.05;
+    let goal_bias = 0.0;
     let sampling_distribution =
         GoalBiasedUniformDistribution::new(joint_limits, goal_state, goal_bias)
             .expect("Failed to create sampling distribution.");
@@ -67,7 +68,9 @@ fn main() {
         rtpl::planners::rrt_star::optimal_gamma(3.14 * 3.14 * 3.14, 3),
     );
 
-    rrt_star.run_iterations(20000);
+    rrt_star.plan_until(&mut MaxTimeTermination::new(
+        std::time::Duration::from_secs(5),
+    ));
 
     // Print the path
     let path = rrt_star.get_path();

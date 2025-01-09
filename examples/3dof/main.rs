@@ -51,7 +51,7 @@ fn main() {
     let steering = EuclideanSteering::new(0.05);
 
     // Use a uniform sampling distribution with 5% goal bias.
-    let goal_bias = 0.05;
+    let goal_bias = 0.0;
     let sampling_distribution =
         GoalBiasedUniformDistribution::new(joint_limits, goal_state, goal_bias)
             .expect("Failed to create sampling distribution.");
