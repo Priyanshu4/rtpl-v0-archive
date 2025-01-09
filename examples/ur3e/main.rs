@@ -6,7 +6,7 @@ mod robot_sphere_collision;
 use robot::Robot;
 use robot_sphere_collision::RobotSphereCollisionChecker;
 
-use rtpl::base::termination::{self, MaxIterationsTermination, MaxTimeTermination};
+use rtpl::base::termination::MaxIterationsTermination;
 use rtpl::base::{Motion, ValidityChecker};
 use rtpl::real_vector::euclidean::{planners::RRTstar, region::Sphere, EuclideanSteering};
 use rtpl::real_vector::{sampling::GoalBiasedUniformDistribution, RealVectorState};
@@ -23,11 +23,7 @@ fn main() {
     let robot = robot.expect("Failed to create robot.");
 
     // Create spherical obstacles
-    let spheres = vec![
-        Sphere::new(RealVectorState::new([0.5, 0.9, 2.0]), 0.3),
-        Sphere::new(RealVectorState::new([0.8, 1.1, 2.0]), 0.4),
-        Sphere::new(RealVectorState::new([0.8, 0.4, 1.1]), 0.5),
-    ];
+    let spheres = vec![];
 
     // Create a collision checker
     let validity_checker = RobotSphereCollisionChecker::new(robot, spheres.clone(), 10);
