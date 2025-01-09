@@ -6,6 +6,7 @@ pub trait TerminationCondition {
     fn reset(&mut self);
 }
 
+#[derive(Copy, Clone, Debug)]
 pub struct MaxIterationsTermination {
     max_iterations: usize,
     current_iteration: usize,
@@ -31,6 +32,7 @@ impl TerminationCondition for MaxIterationsTermination {
     }
 }
 
+#[derive(Copy, Clone, Debug)]
 pub struct MaxTimeTermination {
     max_time: std::time::Duration,
     start_time: std::time::Instant,
