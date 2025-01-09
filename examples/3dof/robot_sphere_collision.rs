@@ -1,7 +1,6 @@
 use super::robot::{Cylinder, Robot};
 use k::nalgebra as na;
 use rtpl::base::motion::Discretizable;
-use rtpl::base::Motion;
 use rtpl::base::ValidityChecker;
 use rtpl::real_vector::euclidean::region::Sphere;
 use rtpl::real_vector::euclidean::EuclideanMotion;
