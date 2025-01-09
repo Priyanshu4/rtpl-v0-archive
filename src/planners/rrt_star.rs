@@ -6,6 +6,7 @@ use crate::base::Region;
 use crate::base::SamplingDistribution;
 use crate::base::State;
 use crate::base::Steering;
+use crate::base::TerminationCondition;
 use crate::base::ValidityChecker;
 use num_traits::Float;
 
@@ -105,20 +106,35 @@ where
         rrt
     }
 
-    /// Attempts to find a solution within a maximum number of iterations.
-    ///
-    /// Terminates and returns true when a solution is found. Otherwise, returns false.
+    /// Attempts to find a solution until a termination condition is met.
     ///
     /// Parameters:
-    /// - `max_iterations`: The maximum number of iterations.
-    pub fn plan(&mut self, max_iterations: u32) -> bool {
-        for _ in 0..max_iterations {
+    /// - `termination_condition`: The termination condition.
+    /// Returns true if a solution was found.
+    pub fn plan_until_solved<TC>(&mut self, termination_condition: &mut TC) -> bool
+    where
+        TC: TerminationCondition,
+    {
+        while !termination_condition.evaluate() {
             self.iteration();
             if self.solved() {
                 return true;
             }
         }
         return false;
+    }
+
+    /// Plan until a termination condition is met. Does not terminate early if a solution is found.
+    ///
+    /// Parameters:
+    /// - `termination_condition`: The termination condition.
+    pub fn plan_until<TC>(&mut self, termination_condition: &mut TC)
+    where
+        TC: TerminationCondition,
+    {
+        while !termination_condition.evaluate() {
+            self.iteration();
+        }
     }
 
     /// Run a fixed number of iterations of the RRT algorithm. Does not terminate early if a solution is found.

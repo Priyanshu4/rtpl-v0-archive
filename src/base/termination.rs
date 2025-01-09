@@ -1,6 +1,6 @@
 pub trait TerminationCondition {
     /// Checks if the termination condition is satisfied.
-    fn evaluate(&self) -> bool;
+    fn evaluate(&mut self) -> bool;
 
     /// Resets the termination condition.
     fn reset(&mut self);
@@ -21,7 +21,8 @@ impl MaxIterationsTermination {
 }
 
 impl TerminationCondition for MaxIterationsTermination {
-    fn evaluate(&self) -> bool {
+    fn evaluate(&mut self) -> bool {
+        self.current_iteration += 1;
         self.current_iteration >= self.max_iterations
     }
 
@@ -45,7 +46,7 @@ impl MaxTimeTermination {
 }
 
 impl TerminationCondition for MaxTimeTermination {
-    fn evaluate(&self) -> bool {
+    fn evaluate(&mut self) -> bool {
         self.start_time.elapsed() >= self.max_time
     }
 
@@ -65,8 +66,10 @@ impl OrTermination {
 }
 
 impl TerminationCondition for OrTermination {
-    fn evaluate(&self) -> bool {
-        self.conditions.iter().any(|condition| condition.evaluate())
+    fn evaluate(&mut self) -> bool {
+        self.conditions
+            .iter_mut()
+            .any(|condition| condition.evaluate())
     }
 
     fn reset(&mut self) {
@@ -87,8 +90,10 @@ impl AndTermination {
 }
 
 impl TerminationCondition for AndTermination {
-    fn evaluate(&self) -> bool {
-        self.conditions.iter().all(|condition| condition.evaluate())
+    fn evaluate(&mut self) -> bool {
+        self.conditions
+            .iter_mut()
+            .all(|condition| condition.evaluate())
     }
 
     fn reset(&mut self) {
@@ -109,7 +114,7 @@ impl ConstantTerminationCondition {
 }
 
 impl TerminationCondition for ConstantTerminationCondition {
-    fn evaluate(&self) -> bool {
+    fn evaluate(&mut self) -> bool {
         self.value
     }
 
