@@ -93,7 +93,7 @@ async fn main() {
         }
 
         // Draw each node and the edge to its parent.
-        let nodes = rrt.get_tree();
+        let nodes = rrt.get_nodes();
         for node in nodes {
             let state = node.state();
             if let Some(parent_index) = node.parent() {

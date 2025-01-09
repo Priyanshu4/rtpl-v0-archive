@@ -165,7 +165,7 @@ where
     }
 
     /// Returns the vector of nodes in the tree.
-    pub fn get_tree(&self) -> &Vec<Node<S, M>> {
+    pub fn get_nodes(&self) -> &Vec<Node<S, M>> {
         &self.nodes
     }
 
