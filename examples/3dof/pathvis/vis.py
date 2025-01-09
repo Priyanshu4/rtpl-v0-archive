@@ -51,6 +51,9 @@ def main():
     # Path to follow
     path = data["path"]
 
+    # Wait for the user to press "Enter" to start the simulation
+    input("Press Enter to start the simulation...")
+
     # Step the robot's position forward
     for target_joint_positions in path:
         for joint_idx in range(num_joints):
