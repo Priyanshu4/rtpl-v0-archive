@@ -60,6 +60,7 @@ def main():
 
     # Wait for the user to press "Enter" to start the simulation
     input("Press Enter to start the simulation...")
+    print("Executing the planned path...")
 
     # Step the robot's position forward
     for target_joint_positions in path:
@@ -68,6 +69,7 @@ def main():
         time.sleep(0.1)  # Optional for visualization
 
     # Keep the simulation open
+    print("Simulation complete. Press Ctrl+C or close the window to exit.")
     while p.isConnected():
         time.sleep(1)
 
