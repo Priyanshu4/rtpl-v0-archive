@@ -6,6 +6,7 @@ pub mod region;
 pub mod sampling;
 pub mod state;
 pub mod steering;
+pub mod termination;
 
 pub use collision::ValidityChecker;
 pub use distance::DistanceMetric;
@@ -15,3 +16,4 @@ pub use region::Region;
 pub use sampling::SamplingDistribution;
 pub use state::State;
 pub use steering::Steering;
+pub use termination::TerminationCondition;

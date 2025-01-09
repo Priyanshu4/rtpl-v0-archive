@@ -1,0 +1,117 @@
+pub trait TerminationCondition {
+    /// Checks if the termination condition is satisfied.
+    fn evaluate(&self) -> bool;
+
+    /// Resets the termination condition.
+    fn reset(&mut self);
+}
+
+pub struct MaxIterationsTermination {
+    max_iterations: usize,
+    current_iteration: usize,
+}
+
+impl MaxIterationsTermination {
+    pub fn new(max_iterations: usize) -> Self {
+        Self {
+            max_iterations,
+            current_iteration: 0,
+        }
+    }
+}
+
+impl TerminationCondition for MaxIterationsTermination {
+    fn evaluate(&self) -> bool {
+        self.current_iteration >= self.max_iterations
+    }
+
+    fn reset(&mut self) {
+        self.current_iteration = 0;
+    }
+}
+
+pub struct MaxTimeTermination {
+    max_time: std::time::Duration,
+    start_time: std::time::Instant,
+}
+
+impl MaxTimeTermination {
+    pub fn new(max_time: std::time::Duration) -> Self {
+        Self {
+            max_time,
+            start_time: std::time::Instant::now(),
+        }
+    }
+}
+
+impl TerminationCondition for MaxTimeTermination {
+    fn evaluate(&self) -> bool {
+        self.start_time.elapsed() >= self.max_time
+    }
+
+    fn reset(&mut self) {
+        self.start_time = std::time::Instant::now();
+    }
+}
+
+pub struct OrTermination {
+    conditions: Vec<Box<dyn TerminationCondition>>,
+}
+
+impl OrTermination {
+    pub fn new(conditions: Vec<Box<dyn TerminationCondition>>) -> Self {
+        Self { conditions }
+    }
+}
+
+impl TerminationCondition for OrTermination {
+    fn evaluate(&self) -> bool {
+        self.conditions.iter().any(|condition| condition.evaluate())
+    }
+
+    fn reset(&mut self) {
+        self.conditions
+            .iter_mut()
+            .for_each(|condition| condition.reset());
+    }
+}
+
+pub struct AndTermination {
+    conditions: Vec<Box<dyn TerminationCondition>>,
+}
+
+impl AndTermination {
+    pub fn new(conditions: Vec<Box<dyn TerminationCondition>>) -> Self {
+        Self { conditions }
+    }
+}
+
+impl TerminationCondition for AndTermination {
+    fn evaluate(&self) -> bool {
+        self.conditions.iter().all(|condition| condition.evaluate())
+    }
+
+    fn reset(&mut self) {
+        self.conditions
+            .iter_mut()
+            .for_each(|condition| condition.reset());
+    }
+}
+
+pub struct ConstantTerminationCondition {
+    value: bool,
+}
+
+impl ConstantTerminationCondition {
+    pub fn new(value: bool) -> Self {
+        Self { value }
+    }
+}
+
+impl TerminationCondition for ConstantTerminationCondition {
+    fn evaluate(&self) -> bool {
+        self.value
+    }
+
+    fn reset(&mut self) {}
+}
