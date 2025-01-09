@@ -4,19 +4,22 @@ import time
 import json
 from pathlib import Path
 import os
+import argparse
 
-# Path to the JSON file
-json_path = Path(__file__).parent.parent / "path.json"
 
-# Load JSON data
-with open(json_path, 'r') as f:
-    data = json.load(f)
-
-# Initialize PyBullet
 def main():
+
+    # Get json path via argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("json_path", type=str, help="Path to the JSON file with the planned path")
+    args = parser.parse_args()
+
+    # Load JSON data
+    with open(args.json_path, 'r') as f:
+        data = json.load(f)
+
     p.connect(p.GUI)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
-
 
     # Disable physics simulation
     p.setRealTimeSimulation(0)
