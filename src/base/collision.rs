@@ -24,6 +24,24 @@ pub trait ValidityChecker<S: State, M: Motion<S>> {
     fn is_motion_valid(&self, initial_state: &S, motion: &M) -> bool;
 }
 
+pub struct AlwaysValid {}
+
+impl AlwaysValid {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
+impl<S: State, M: Motion<S>> ValidityChecker<S, M> for AlwaysValid {
+    fn is_state_valid(&self, _state: &S) -> bool {
+        true
+    }
+
+    fn is_motion_valid(&self, _initial_state: &S, _motion: &M) -> bool {
+        true
+    }
+}
+
 pub struct CollisionRegion<S: State> {
     region: Box<dyn Region<S>>,
     discretization_steps: usize,
