@@ -311,6 +311,10 @@ where
             radius
         }
     }
+
+    pub fn sampling_distribution(&self) -> &Box<dyn SamplingDistribution<S>> {
+        &self.sampling_distribution
+    }
 }
 
 /// Computes gamma value to achieve asymptotic optimality for the RRT* algorithm.

@@ -79,6 +79,14 @@ impl<F: Float + SampleUniform, const N: usize> GoalBiasedUniformDistribution<F, 
             rng: rand::thread_rng(),
         })
     }
+
+    pub fn set_goal_bias(&mut self, goal_bias: f64) -> Result<(), &'static str> {
+        if goal_bias < 0.0 || goal_bias > 1.0 {
+            return Err("goal_bias must be in the range [0, 1]");
+        }
+        self.bernoulli = Bernoulli::new(goal_bias).unwrap();
+        Ok(())
+    }
 }
 
 impl<F: Float + SampleUniform, const N: usize> SamplingDistribution<RealVectorState<F, N>>

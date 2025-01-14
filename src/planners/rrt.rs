@@ -216,4 +216,8 @@ where
         self.nodes.push(node);
         index
     }
+
+    pub fn sampling_distribution(&self) -> &Box<dyn SamplingDistribution<S>> {
+        &self.sampling_distribution
+    }
 }
