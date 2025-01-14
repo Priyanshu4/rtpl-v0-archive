@@ -1,4 +1,4 @@
-use k::{nalgebra as na, Chain, InverseKinematicsSolver, SerialChain};
+use k::{nalgebra as na, Chain, InverseKinematicsSolver, Isometry3, SerialChain};
 use urdf_rs::{read_file, Geometry};
 
 #[derive(Debug, Clone)]
@@ -66,6 +66,10 @@ impl Robot {
     /// Gets the joint angles of the robot.
     pub fn joint_positions(&self) -> Vec<f32> {
         self.chain.joint_positions().to_vec()
+    }
+
+    pub fn end_transform(&self) -> Isometry3<f32> {
+        self.chain.end_transform()
     }
 
     /// Sets the joint angles of the robot and updates the chain.
