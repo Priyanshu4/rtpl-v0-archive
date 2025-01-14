@@ -315,6 +315,13 @@ where
     pub fn sampling_distribution(&self) -> &Box<dyn SamplingDistribution<S>> {
         &self.sampling_distribution
     }
+
+    pub fn set_sampling_distribution(
+        &mut self,
+        sampling_distribution: Box<dyn SamplingDistribution<S>>,
+    ) {
+        self.sampling_distribution = sampling_distribution;
+    }
 }
 
 /// Computes gamma value to achieve asymptotic optimality for the RRT* algorithm.
