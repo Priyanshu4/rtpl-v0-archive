@@ -19,6 +19,10 @@ impl MaxIterationsTermination {
             current_iteration: 0,
         }
     }
+
+    pub fn current_iteration(&self) -> usize {
+        self.current_iteration
+    }
 }
 
 impl TerminationCondition for MaxIterationsTermination {
@@ -44,6 +48,10 @@ impl MaxTimeTermination {
             max_time,
             start_time: std::time::Instant::now(),
         }
+    }
+
+    pub fn time_elapsed(&self) -> std::time::Duration {
+        self.start_time.elapsed()
     }
 }
 
