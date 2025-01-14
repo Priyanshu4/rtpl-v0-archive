@@ -25,6 +25,9 @@
       <geometry>
         <mesh filename="../meshes/base.dae"/>
       </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
     </visual>
     <!-- Base joint -->
     <collision>
@@ -72,6 +75,9 @@
       <geometry>
         <mesh filename="../meshes/shoulder.dae"/>
       </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.01 0.00"/>
@@ -111,6 +117,9 @@
       <geometry>
         <mesh filename="../meshes/upperarm.dae"/>
       </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.02 0.01"/>
@@ -186,6 +195,9 @@
       <geometry>
         <mesh filename="../meshes/forearm.dae"/>
       </geometry>
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.03 0.00"/>
@@ -285,6 +297,9 @@
       <geometry>
         <mesh filename="../meshes/wrist1.dae"/>
       </geometry>
+      <material name="LightBlue">
+        <color rgba="0.761 0.882 0.965 1.0"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.05 0.0"/>
@@ -336,6 +351,9 @@
       <geometry>
         <mesh filename="../meshes/wrist2.dae"/>
       </geometry>
+      <material name="LightBlue">
+        <color rgba="0.761 0.882 0.965 1.0"/>
+      </material>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.07"/>
