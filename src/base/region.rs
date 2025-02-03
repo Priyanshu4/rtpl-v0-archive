@@ -1,5 +1,6 @@
 use crate::base::distance::DistanceMetric;
 use crate::base::state::State;
+use serde::{Deserialize, Serialize};
 
 /// A region is a set of states in the state space of a system.
 pub trait Region<T: State> {
@@ -23,7 +24,7 @@ impl<T: State + PartialEq> Region<T> for SingleStateRegion<T> {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct BallRegion<T, R, D> {
     center: T,
     radius: R,

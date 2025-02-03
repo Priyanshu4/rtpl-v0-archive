@@ -3,8 +3,9 @@ use crate::base::motion::HasCost;
 use crate::base::motion::Motion;
 use crate::real_vector::RealVectorState;
 use num_traits::float::Float;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct EuclideanMotion<F: Float, const N: usize> {
     state: RealVectorState<F, N>,
     cost: F,
