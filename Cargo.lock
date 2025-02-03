@@ -778,6 +778,7 @@ dependencies = [
  "macroquad",
  "num-traits",
  "rand",
+ "serde",
  "special",
  "urdf-rs",
 ]

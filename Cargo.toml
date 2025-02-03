@@ -8,6 +8,7 @@ num-traits="0.2"    # For Float trait
 rand = "0.8"        # For random sampling
 kiddo = "5.0"       # For kd-trees
 special = "0.11"     # For Gamma function
+serde = {version = "1.0", features = ["derive"]}
 
 [dev-dependencies]
 macroquad = "0.3"   # Used only for animations in examples

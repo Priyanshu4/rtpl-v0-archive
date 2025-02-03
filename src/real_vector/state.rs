@@ -1,10 +1,11 @@
 use crate::base::state::State;
 use num_traits::float::Float;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::ops::{Add, Div, Index, Mul, Sub};
 
 /// Represents a vector in N-dimensional space.
 /// Each dimension is represented by a generic floating point value.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct RealVectorState<F: Float, const N: usize> {
     values: [F; N],
 }
@@ -184,5 +185,42 @@ impl<F: Float, const N: usize> Div<F> for &RealVectorState<F, N> {
             values[i] = self.values[i] / scalar;
         }
         RealVectorState::new(values)
+    }
+}
+
+// Serialize implementation: converts to Vec and serializes
+impl<F, const N: usize> Serialize for RealVectorState<F, N>
+where
+    F: Float + Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        self.to_vec().serialize(serializer)
+    }
+}
+
+// Deserialize to Vec and convert to RealVectorState
+impl<'de, F, const N: usize> Deserialize<'de> for RealVectorState<F, N>
+where
+    F: Float + Deserialize<'de>,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        // Deserialize directly into a Vec<F>
+        let vec: Vec<F> = Vec::deserialize(deserializer)?;
+
+        // Check if the vector has the correct length
+        if vec.len() != N {
+            return Err(serde::de::Error::invalid_length(
+                vec.len(),
+                &format!("expected {} elements", N).as_str(),
+            ));
+        }
+
+        Ok(RealVectorState::from_vec(vec).unwrap())
     }
 }
