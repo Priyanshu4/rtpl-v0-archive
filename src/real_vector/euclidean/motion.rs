@@ -42,7 +42,7 @@ impl<F: Float, const N: usize> Discretizable<RealVectorState<F, N>> for Euclidea
         let direction = self.state - *initial_state;
         let n = F::from(num_steps).expect("usize to F conversion failed");
         let step = &direction / n;
-        (0..num_steps)
+        (1..=num_steps)
             .map(|i| initial_state + &(&step * F::from(i).expect("usize to F conversion failed")))
             .collect()
     }
