@@ -32,9 +32,21 @@ impl<F: Float + Axis, const N: usize> NearestNeighbors<RealVectorState<F, N>, F>
 
     fn within_radius(&self, state: &RealVectorState<F, N>, radius: F) -> Vec<usize> {
         self.kdtree
+            .within_unsorted::<SquaredEuclidean>(state.values(), radius * radius)
+            .iter()
+            .map(|n| n.item)
+            .collect()
+    }
+
+    fn within_radius_sorted(&self, state: &RealVectorState<F, N>, radius: F) -> Vec<usize> {
+        self.kdtree
             .within::<SquaredEuclidean>(state.values(), radius * radius)
             .iter()
             .map(|n| n.item)
             .collect()
+    }
+
+    fn clear(&mut self) {
+        self.kdtree = KdTree::new();
     }
 }

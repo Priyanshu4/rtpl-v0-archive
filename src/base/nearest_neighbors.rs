@@ -46,6 +46,19 @@ pub trait NearestNeighbors<S: State, F: PartialOrd> {
     /// Returns:
     /// The items/indices of the states within the radius.
     fn within_radius(&self, state: &S, radius: F) -> Vec<usize>;
+
+    /// Gets all states within a given radius of the given state, sorted by nearest to farthest.
+    ///
+    /// Parameters:
+    /// - `state`: The state to find the neighbors of.
+    /// - `radius`: The radius within which to find neighbors.
+    ///
+    /// Returns:
+    /// The items/indices of the states within the radius in order of nearest to farthest.
+    fn within_radius_sorted(&self, state: &S, radius: F) -> Vec<usize>;
+
+    /// Removes all states from the data structure.
+    fn clear(&mut self);
 }
 
 /// A nearest neighbor data structure that uses a linear search to find the nearest neighbors.
@@ -99,5 +112,20 @@ impl<S: State, F: PartialOrd, D: DistanceMetric<S, F>> NearestNeighbors<S, F>
             .filter(|(p, _)| self.distance_metric.distance(&p, &state) <= radius)
             .map(|(_, i)| *i)
             .collect()
+    }
+
+    fn within_radius_sorted(&self, state: &S, radius: F) -> Vec<usize> {
+        let mut within = self.within_radius(state, radius);
+        within.sort_by(|&a, &b| {
+            self.distance_metric
+                .distance(&self.states[a].0, state)
+                .partial_cmp(&self.distance_metric.distance(&self.states[b].0, state))
+                .unwrap()
+        });
+        within
+    }
+
+    fn clear(&mut self) {
+        self.states.clear();
     }
 }
