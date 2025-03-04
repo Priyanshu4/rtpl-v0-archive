@@ -7,8 +7,8 @@
 //! ```
 
 use macroquad::prelude::*;
-use rtpl::base::collision::CollisionRegionDiscretizationType;
-use rtpl::base::{collision::CollisionRegion, region::UnionRegion, Motion, Region};
+use rtpl::base::collision::{CollisionRegion, CollisionRegionMotionDiscretizationType};
+use rtpl::base::{region::UnionRegion, Motion, Region};
 use rtpl::real_vector::euclidean::{planners::RRTstar, region::Sphere, EuclideanSteering};
 use rtpl::real_vector::{sampling::GoalBiasedUniformDistribution, RealVectorState};
 
@@ -47,7 +47,7 @@ async fn main() {
 
     let validity_checker = CollisionRegion::new(
         Box::new(UnionRegion::new(boxed_circles)),
-        CollisionRegionDiscretizationType::Steps(2),
+        CollisionRegionMotionDiscretizationType::Steps(2),
     );
 
     // Define the start and goal points.

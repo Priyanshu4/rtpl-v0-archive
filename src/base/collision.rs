@@ -53,10 +53,10 @@ impl<S: State, M: Motion<S>> ValidityChecker<S, M> for AlwaysValid {
 /// Regardless of which one is used, the end state is always checked, but the initial state is not.
 pub struct CollisionRegion<S: State> {
     region: Box<dyn Region<S>>,
-    discretization: CollisionRegionDiscretizationType,
+    discretization: CollisionRegionMotionDiscretizationType,
 }
 
-pub enum CollisionRegionDiscretizationType {
+pub enum CollisionRegionMotionDiscretizationType {
     Steps(usize),
     Resolution(f64),
 }
@@ -64,7 +64,7 @@ pub enum CollisionRegionDiscretizationType {
 impl<S: State> CollisionRegion<S> {
     pub fn new(
         region: Box<dyn Region<S>>,
-        discretization: CollisionRegionDiscretizationType,
+        discretization: CollisionRegionMotionDiscretizationType,
     ) -> Self {
         Self {
             region,
@@ -82,10 +82,10 @@ impl<S: State + Clone, M: Motion<S> + Discretizable<S>> ValidityChecker<S, M>
 
     fn is_motion_valid(&self, initial_state: &S, motion: &M) -> bool {
         let states: Vec<S> = match &self.discretization {
-            CollisionRegionDiscretizationType::Steps(discretization_steps) => {
+            CollisionRegionMotionDiscretizationType::Steps(discretization_steps) => {
                 motion.discretize(initial_state, *discretization_steps)
             }
-            CollisionRegionDiscretizationType::Resolution(discretization_resolution) => {
+            CollisionRegionMotionDiscretizationType::Resolution(discretization_resolution) => {
                 motion.discretize_with_resolution(initial_state, *discretization_resolution)
             }
         };
