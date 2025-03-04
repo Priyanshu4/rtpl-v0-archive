@@ -1,6 +1,7 @@
 use crate::base::motion::{Discretizable, Motion};
 use crate::base::region::Region;
 use crate::base::state::State;
+use serde::{Deserialize, Serialize};
 
 /// Checks if a state or motion is valid (i.e., not in collision).
 pub trait ValidityChecker<S: State, M: Motion<S>> {
@@ -56,7 +57,7 @@ pub struct CollisionRegion<S: State> {
     discretization: CollisionRegionMotionDiscretizationType,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum CollisionRegionMotionDiscretizationType {
     Steps(usize),
     Resolution(f64),
