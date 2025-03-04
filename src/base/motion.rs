@@ -34,5 +34,11 @@ pub trait HasCost<F> {
 }
 
 pub trait Discretizable<T> {
-    fn discretize(&self, initial_state: &T, num_steps: usize) -> Vec<T>;
+    /// Discretizes the motion from the initial state to the final state.
+    /// Both initial state and final state are included, in addition to the specified interior points.
+    fn discretize(&self, initial_state: &T, num_interior_points: usize) -> Vec<T>;
+
+    /// Discretizes the motion from the initial state to the final state with a given minimum resolution.
+    /// Both initial state and final state are included.
+    fn discretize_with_resolution(&self, initial_state: &T, resolution: f64) -> Vec<T>;
 }

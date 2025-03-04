@@ -42,16 +42,33 @@ impl<S: State, M: Motion<S>> ValidityChecker<S, M> for AlwaysValid {
     }
 }
 
+/// Checks if a state or motion is valid (i.e., not in collision) with a given region.
+///
+/// Motions are checked using discretization.
+/// Discretization can be given in two ways:
+/// - `discretization_steps`: The number of interior points to discretize the motion into, not counting endpoints.
+/// - `discretization_resolution`: The minimum resolution of discretization.
+/// Only one of the two should be provided.
+///
+/// Regardless of which one is used, the end state is always checked, but the initial state is not.
 pub struct CollisionRegion<S: State> {
     region: Box<dyn Region<S>>,
-    discretization_steps: usize,
+    discretization: CollisionRegionDiscretizationType,
+}
+
+pub enum CollisionRegionDiscretizationType {
+    Steps(usize),
+    Resolution(f64),
 }
 
 impl<S: State> CollisionRegion<S> {
-    pub fn new(region: Box<dyn Region<S>>, discretization_steps: usize) -> Self {
+    pub fn new(
+        region: Box<dyn Region<S>>,
+        discretization: CollisionRegionDiscretizationType,
+    ) -> Self {
         Self {
             region,
-            discretization_steps,
+            discretization,
         }
     }
 }
@@ -64,7 +81,15 @@ impl<S: State + Clone, M: Motion<S> + Discretizable<S>> ValidityChecker<S, M>
     }
 
     fn is_motion_valid(&self, initial_state: &S, motion: &M) -> bool {
-        let states: Vec<S> = motion.discretize(initial_state, self.discretization_steps);
+        let states: Vec<S> = match &self.discretization {
+            CollisionRegionDiscretizationType::Steps(discretization_steps) => {
+                motion.discretize(initial_state, *discretization_steps)
+            }
+            CollisionRegionDiscretizationType::Resolution(discretization_resolution) => {
+                motion.discretize_with_resolution(initial_state, *discretization_resolution)
+            }
+        };
+        let states = &states[1..];
         states.iter().all(|state| !self.region.contains(state))
     }
 }

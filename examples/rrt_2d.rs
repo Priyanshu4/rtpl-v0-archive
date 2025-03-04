@@ -7,6 +7,7 @@
 //! ```
 
 use macroquad::prelude::*;
+use rtpl::base::collision::CollisionRegionDiscretizationType;
 use rtpl::base::{collision::CollisionRegion, region::UnionRegion, Motion, Region};
 use rtpl::real_vector::euclidean::{planners::RRT, region::Sphere, EuclideanSteering};
 use rtpl::real_vector::{sampling::GoalBiasedUniformDistribution, RealVectorState};
@@ -44,7 +45,10 @@ async fn main() {
         .map(|circle| Box::new(circle.clone()) as Box<dyn Region<_>>)
         .collect();
 
-    let validity_checker = CollisionRegion::new(Box::new(UnionRegion::new(boxed_circles)), 2);
+    let validity_checker = CollisionRegion::new(
+        Box::new(UnionRegion::new(boxed_circles)),
+        CollisionRegionDiscretizationType::Resolution(5.0),
+    );
 
     // Define the start and goal points.
     let start = RealVectorState::new([100.0, 100.0]);
