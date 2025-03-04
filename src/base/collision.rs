@@ -56,6 +56,7 @@ pub struct CollisionRegion<S: State> {
     discretization: CollisionRegionMotionDiscretizationType,
 }
 
+#[derive(Clone, Copy, Debug)]
 pub enum CollisionRegionMotionDiscretizationType {
     Steps(usize),
     Resolution(f64),
