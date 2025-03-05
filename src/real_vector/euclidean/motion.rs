@@ -61,10 +61,15 @@ impl<F: Float, const N: usize> Discretizable<RealVectorState<F, N>> for Euclidea
         ));
         let direction = self.state - *initial_state;
         let norm = direction.norm();
-        let num_interior_points = (norm / resolution).ceil().to_usize().expect(&format!(
-            "F ({}) to usize conversion failed",
-            std::any::type_name::<F>()
-        )) - 1;
+        let discrete_segments = (norm / resolution)
+            .ceil()
+            .to_usize()
+            .expect(&format!(
+                "F ({}) to usize conversion failed",
+                std::any::type_name::<F>()
+            ))
+            .max(1);
+        let num_interior_points = discrete_segments - 1;
         self.discretize(initial_state, num_interior_points)
     }
 }
