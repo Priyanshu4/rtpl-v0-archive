@@ -282,7 +282,7 @@ where
 
             if self
                 .validity_checker
-                .is_motion_valid(neighbor_state, &new_motion)
+                .is_motion_valid(&self.nodes[node_index].state(), &new_motion)
             {
                 let cumulative_cost = self.nodes[node_index].cumulative_cost + new_motion.cost();
                 if cumulative_cost < neighbor.cumulative_cost {
