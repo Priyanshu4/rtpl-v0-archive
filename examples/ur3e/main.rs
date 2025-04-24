@@ -12,9 +12,6 @@ use rtpl::real_vector::euclidean::{planners::RRTstar, region::Sphere, EuclideanS
 use rtpl::real_vector::sampling::{GoalBiasedUniformDistribution, UniformDistribution};
 use rtpl::real_vector::RealVectorState;
 
-use k::{nalgebra as na, Real};
-use na::{Isometry3, Translation3, UnitQuaternion};
-
 fn main() {
     // Create a robot instance
     let urdf_path = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -29,11 +26,9 @@ fn main() {
     // Define the start state. Check that the start state is valid.
     let start = RealVectorState::new([0.0; 6]);
 
-    // Define the goal region. Check that the goal state is valid.
-    // Pick random goal state
-
+    // Define the goal region.
     let goal_state = RealVectorState::new([-1.57, -1.57, -1.57, 1.57, 1.57, 1.57]);
-    let goal_tolerance = 0.05;
+    let goal_tolerance = 0.01;
     let goal_region = Sphere::new(goal_state, goal_tolerance);
 
     // Just to test the IK

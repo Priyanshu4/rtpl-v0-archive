@@ -1,4 +1,4 @@
-use super::robot::{Robot, Sphere};
+use super::robot::Robot;
 use k::nalgebra as na;
 use rtpl::base::motion::Discretizable;
 use rtpl::base::ValidityChecker;

@@ -64,6 +64,7 @@ impl Robot {
     }
 
     /// Gets the joint angles of the robot.
+    #[allow(dead_code)]
     pub fn joint_positions(&self) -> Vec<f32> {
         self.chain.joint_positions().to_vec()
     }
@@ -114,6 +115,7 @@ impl Robot {
         &self.spheres
     }
 
+    #[allow(dead_code)]
     pub fn joint_limits(&self) -> &[(f32, f32)] {
         &self.joint_limits
     }
