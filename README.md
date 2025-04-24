@@ -33,6 +33,6 @@ The library provides several examples out of the box.
 - ur3e
   - Runs RRT* on a UR3E manipulator specified by a URDF
   - Rust module writes a json to `examples/ur3e/path.json` which is then read by `pathvis.py` for visualization
-    - `cargo run --release --example ur3e`
-    - `uv run examples/pathvis.py examples/ur3e/path.json` 
-      - If you do not have `uv` installed, you can run with `python>=3.11` or higher after installing `pybullet>=3.2.6`
+    1. `cargo run --release --example ur3e` to plan the path
+    2. `uv run examples/pathvis.py examples/ur3e/path.json` to visualize the robot's path with pybullet
+        - If you do not have `uv` installed, you can run with `python>=3.11` or higher after installing `pybullet>=3.2.6`
